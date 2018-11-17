@@ -43,19 +43,20 @@ void setup() {
   
   //TODO interpolation to center pos
   Serial.println("Set all servo motor to center (512).");
-  for (int i = 1; i <= 5; i++){
-    #ifdef Arbotix
-      #ifdef CENTER_REQ
-        SetPosition(i, 512);
-        Serial.print("Pos set to center: ");
-        Serial.println(i);
-      #endif
-      Relax(i);
-    #endif
-    delay(1000);
-  }
-
-
+  #ifdef Arbotix
+ 
+    const PROGMEM unsigned int m_init_pos[] = {5, 512, 512, 512, 512, 512};
+    set_position_slowly(m_init_pos);
+    
+	delay(1000);
+	
+    #ifdef CENTER_REQ
+      for (int i = 1; i<= 5; i++){
+        Relax(i);  
+      }
+	#endif
+	
+  #endif
 }
 
 void loop() {
@@ -330,20 +331,20 @@ void loop() {
   Serial.print("Pincher pos: ");
   Serial.println(m_pincher_pos);
 
-
-  // TODO last step -> pincher position setup
+  
   #ifdef Arbotix
-    //const PROGMEM unsigned int m_position[] = {5, m_pos1, m_pos2, m_pos3, m_pos4, m_pincher_pos};
+    // TODO -> linear movement with threads
+    //unsigned int m_position[] = {4, m_pos1, m_pos2, m_pos3, m_pos4};
+    //SetPosition(5, m_pincher_pos);
     //set_position_slowly(m_position);
-  #endif
-  SetPosition(1, m_pos1);
-  SetPosition(2, m_pos2);
-  SetPosition(3, m_pos3);
-  SetPosition(4, m_pos4);
-	
-	
-  // Maybe next time:
-  // TODO -> linear movement with threads
+
+    SetPosition(1, m_pos1);
+    SetPosition(2, m_pos2);
+    SetPosition(3, m_pos3);
+    SetPosition(4, m_pos4);
+	SetPosition(5, m_pincher_pos);
+  #endif    
+
   
   // New run?
   Serial.println("Send a random character if you want to set another position");
@@ -355,9 +356,10 @@ void loop() {
 
 }
 
+
 #ifdef Arbotix
 //TODO 5 if pincher not needed
-  void set_position_slowly(const unsigned int p_position[6]){
+  void set_position_slowly(const unsigned int* p_position){
     delay(100);                    // recommended pause
     bioloid.loadPose(p_position);   // load the pose from FLASH, into the nextPose buffer
     bioloid.readPose();            // read in current servo positions to the curPose buffer   
@@ -369,6 +371,7 @@ void loop() {
     }
   }
 #endif
+
 
 int calc_position_from_teta(double p_teta){
   if(isnan(p_teta))
