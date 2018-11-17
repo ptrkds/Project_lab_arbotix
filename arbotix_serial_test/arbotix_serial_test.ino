@@ -4,7 +4,10 @@
 #include <BioloidController.h>
 
 void setup() {
-
+  
+  delay(2000);
+  
+  
   //open serial port
    Serial.begin(9600);
    delay (500);   
@@ -16,14 +19,14 @@ void setup() {
     Serial.println("Set all servo motor to center (512).");
     for (int i = 1; i <= 5; i++){
       SetPosition(i, 512);
-      delay(100);
+      delay(1000);
     } 
 
-    Serial.println("###########################");
-    Serial.println("Relax all servo motor.");  
-    for (int i = 1; i <= 5; i++){
-      Relax(i); 
-    }
+    //Serial.println("###########################");
+    //Serial.println("Relax all servo motor.");  
+    //for (int i = 1; i <= 5; i++){
+      //Relax(i); 
+    //}
     
 }
 
@@ -61,7 +64,8 @@ void loop() {
       }
       
       SetPosition(servoNumber,positionValue);
-      Relax(servoNumber); 
+      delay(2000);
+      //Relax(servoNumber); 
       
       Serial.print("Servo");
       Serial.print(servoNumber);
